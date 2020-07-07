@@ -1,7 +1,5 @@
 #pragma once
 
-#define DllImport   __declspec("dll/glew32.dll")
-
 //console
 #include <iostream>
 //add functions to draw
