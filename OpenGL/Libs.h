@@ -2,6 +2,13 @@
 
 //console
 #include <iostream>
+//manipulate files
+#include <fstream>
+//manipulate string
+#include <string>
+//better arrays
+#include <vector>
+
 //add functions to draw
 #include <glew.h>
 //create window and draw area
