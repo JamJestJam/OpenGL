@@ -1,12 +1,19 @@
 #include "Libs.h"
 
+//function to update input state
+void UpdateInput(GLFWwindow* window) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {//check if esc key is press
+		glfwSetWindowShouldClose(window, GLFW_TRUE);//close window
+	}
+}
+
 //function load on resize window
 void Framebuffer_resize_callback(GLFWwindow* win, int frameBufferWidth, int frameBufferHeight) {
 	glViewport(0, 0, frameBufferWidth, frameBufferHeight);//set new draw area size
 }
 
 //function to load shader
-bool loadShaders(GLuint& program)
+bool LoadShaders(GLuint& program)
 {
 	bool loadSuccess = true;
 	char infoLog[512];//info about errors for example. program isn't able to link or a shader isn't able to compile etc.
@@ -129,9 +136,21 @@ int main() {
 		return 0;//shutdown program
 	}
 
+	//opengl options
+	glEnable(GL_DEPTH_TEST);//enable using Z coords on the screen
+
+	glEnable(GL_CULL_FACE);//don't draw faces
+	glCullFace(GL_BACK);//don't draw back face
+	glFrontFace(GL_CCW);//set fron face to face that the vector edges is counterclockwise
+
+	glEnable(GL_BLEND);//enable blending colors
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);//set color thransparent
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);//fill the shape with a color
+
 	//shader load
 	GLuint coreProgram;//create new shader programs
-	if (!loadShaders(coreProgram)) {//load shaders & check if is success
+	if (!LoadShaders(coreProgram)) {//load shaders & check if is success
 		glfwTerminate();
 	}
 	glClearColor(1, 1, 1, 1);//set clear color to RGBA
@@ -142,6 +161,7 @@ int main() {
 		glfwPollEvents();
 
 		//Update logic
+		UpdateInput(window);
 
 		//Clear
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);//clear draw area
