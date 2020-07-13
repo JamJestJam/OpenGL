@@ -1,5 +1,23 @@
 #include "Libs.h"
 
+//object 3D 
+Vertex vertices[] = {
+	//triangle
+	//position					//color					//texcoords
+	vec3( 0.0f,  0.5f, 0.0f),	vec3(1.0f, 0.0f, 0.0f),	vec2(0.0f, 1.0f),
+	vec3(-0.5f, -0.5f, 0.0f),	vec3(0.0f, 1.0f, 0.0f),	vec2(0.0f, 0.0f),
+	vec3( 0.5f, -0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(1.0f, 0.0f)
+};
+//number of vertices in triangle
+unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
+  
+//use verticles ID
+GLuint indices[] = {
+	0,1,2
+};
+//number of vertices in use
+unsigned nrOfindices = sizeof(indices) / sizeof(GLuint);
+
 //function to update input state
 void UpdateInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {//check if esc key is press
@@ -153,6 +171,35 @@ int main() {
 	if (!LoadShaders(coreProgram)) {//load shaders & check if is success
 		glfwTerminate();
 	}
+
+	//VAO - buffer for 3D objects
+	GLuint VAO;
+	glCreateVertexArrays(1, &VAO);//create space to storage 3D object
+	glBindVertexArray(VAO);//set our VAO to activ, all changes will be made at VAO
+
+	//VBO - buffer for verticles
+	GLuint VBO;
+	glGenBuffers(1, &VBO);//create space to storage vertex
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);//set buffer type to array
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);//send data to VBO, graphic card memory
+
+	//EBO - buffer for indices
+	GLuint EBO;
+	glGenBuffers(1, &EBO);//create space to storage indices
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);//set buffer type to element array
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);//send data to EBO, graphic card memory
+
+	//let the graphics cards know what the float array, we send represents.
+	//first element, element lengh, data type, normalize, size to next vertex position, pointer to next atribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position));//position
+	glEnableVertexAttribArray(0);//enable position
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));//color
+	glEnableVertexAttribArray(1);//enable color
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord));//texture
+	glEnableVertexAttribArray(2);//enable texture
+
+	glBindVertexArray(0);//wyjdü z edycji nasze vao
+
 	glClearColor(1, 1, 1, 1);//set clear color to RGBA
 	//main loop
 	while (!glfwWindowShouldClose(window))//while window is not closed
@@ -166,7 +213,15 @@ int main() {
 		//Clear
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);//clear draw area
 
+		//use a shader/program
+		glUseProgram(coreProgram);
+
+		//bind vertex array object
+		glBindVertexArray(VAO);
+
 		//Draw
+		glDrawArrays(GL_TRIANGLES, 0, nrOfVertices);
+		//glDrawElements(GL_TRIANGLES, nrOfindices, GL_UNSIGNED_INT, 0);
 
 		//END
 		glfwSwapBuffers(window);//make thinks faster

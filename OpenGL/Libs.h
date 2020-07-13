@@ -28,3 +28,10 @@
 
 using namespace std;
 using namespace glm;
+
+//base point in 3D
+struct Vertex {
+	vec3 position;
+	vec3 color;
+	vec2 texcoord;
+};
