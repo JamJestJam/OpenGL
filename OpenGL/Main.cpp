@@ -1,19 +1,24 @@
 #include "Libs.h"
 
-//object 3D 
+//triangle 
 Vertex vertices[] = {
 	//triangle
 	//position					//color					//texcoords
-	vec3( 0.0f,  0.5f, 0.0f),	vec3(1.0f, 0.0f, 0.0f),	vec2(0.0f, 1.0f),
+	vec3(-0.5f,  0.5f, 0.0f),	vec3(1.0f, 0.0f, 0.0f),	vec2(0.0f, 1.0f),
 	vec3(-0.5f, -0.5f, 0.0f),	vec3(0.0f, 1.0f, 0.0f),	vec2(0.0f, 0.0f),
-	vec3( 0.5f, -0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(1.0f, 0.0f)
+	vec3( 0.5f, -0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(1.0f, 0.0f),
+
+	vec3(-0.5f,  0.5f, 0.0f),	vec3(1.0f, 0.0f, 0.0f),	vec2(0.0f, 1.0f),
+	vec3( 0.5f, -0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(1.0f, 0.0f),
+	vec3( 0.5f,  0.5f, 0.0f),	vec3(0.0f, 1.0f, 0.0f),	vec2(0.0f, 0.0f)
 };
 //number of vertices in triangle
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
-  
+
 //use verticles ID
 GLuint indices[] = {
-	0,1,2
+	0, 1, 2,	//triangle 1
+	0, 2, 5		//triangle 2
 };
 //number of vertices in use
 unsigned nrOfindices = sizeof(indices) / sizeof(GLuint);
@@ -164,7 +169,8 @@ int main() {
 	glEnable(GL_BLEND);//enable blending colors
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);//set color thransparent
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);//fill the shape with a color
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);//fill the shape with a color
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//draw only edges
 
 	//shader load
 	GLuint coreProgram;//create new shader programs
@@ -200,7 +206,7 @@ int main() {
 
 	glBindVertexArray(0);//wyjdü z edycji nasze vao
 
-	glClearColor(1, 1, 1, 1);//set clear color to RGBA
+	glClearColor(0, 0, 0, 1);//set clear color to RGBA
 	//main loop
 	while (!glfwWindowShouldClose(window))//while window is not closed
 	{
@@ -220,8 +226,8 @@ int main() {
 		glBindVertexArray(VAO);
 
 		//Draw
-		glDrawArrays(GL_TRIANGLES, 0, nrOfVertices);
-		//glDrawElements(GL_TRIANGLES, nrOfindices, GL_UNSIGNED_INT, 0);
+		//glDrawArrays(GL_TRIANGLES, 0, nrOfVertices);
+		glDrawElements(GL_TRIANGLES, nrOfindices, GL_UNSIGNED_INT, 0);
 
 		//END
 		glfwSwapBuffers(window);//make thinks faster
