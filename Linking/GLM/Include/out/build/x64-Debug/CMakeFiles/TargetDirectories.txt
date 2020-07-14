@@ -1,0 +1,2 @@
+F:/Visual Studio/source/UczeSie/Linking/GLM/Include/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+F:/Visual Studio/source/UczeSie/Linking/GLM/Include/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir

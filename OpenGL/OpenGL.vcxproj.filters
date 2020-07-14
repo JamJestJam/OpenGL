@@ -33,10 +33,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment_core.glsl">
+    <None Include="Shaders\fragment_core.glsl">
       <Filter>Resource Files\shader\core</Filter>
     </None>
-    <None Include="vertex_core.glsl">
+    <None Include="Shaders\vertex_core.glsl">
       <Filter>Resource Files\shader\core</Filter>
     </None>
   </ItemGroup>

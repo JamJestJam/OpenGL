@@ -4,13 +4,10 @@
 Vertex vertices[] = {
 	//triangle
 	//position					//color					//texcoords
-	vec3(-0.5f,  0.5f, 0.0f),	vec3(1.0f, 0.0f, 0.0f),	vec2(0.0f, 1.0f),
-	vec3(-0.5f, -0.5f, 0.0f),	vec3(0.0f, 1.0f, 0.0f),	vec2(0.0f, 0.0f),
-	vec3( 0.5f, -0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(1.0f, 0.0f),
-
-	vec3(-0.5f,  0.5f, 0.0f),	vec3(1.0f, 0.0f, 0.0f),	vec2(0.0f, 1.0f),
-	vec3( 0.5f, -0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(1.0f, 0.0f),
-	vec3( 0.5f,  0.5f, 0.0f),	vec3(0.0f, 1.0f, 0.0f),	vec2(0.0f, 0.0f)
+	vec3(-0.5f,  0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(0.0f, 1.0f),
+	vec3(-0.5f, -0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(0.0f, 0.0f),
+	vec3(0.5f, -0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(1.0f, 0.0f),
+	vec3(0.5f,  0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(1.0f, 1.0f)
 };
 //number of vertices in triangle
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
@@ -18,7 +15,7 @@ unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 //use verticles ID
 GLuint indices[] = {
 	0, 1, 2,	//triangle 1
-	0, 2, 5		//triangle 2
+	0, 2, 3		//triangle 2
 };
 //number of vertices in use
 unsigned nrOfindices = sizeof(indices) / sizeof(GLuint);
@@ -48,7 +45,7 @@ bool LoadShaders(GLuint& program)
 	ifstream inFile;//fsteream file
 
 	//vertex shader
-	inFile.open("vertex_core.glsl");//open file
+	inFile.open("Shaders\\vertex_core.glsl");//open file
 
 	if (inFile.is_open()) {//check if file is open
 		while (getline(inFile, temp)) {//read all lines
@@ -79,7 +76,7 @@ bool LoadShaders(GLuint& program)
 	src = "";//clear src
 
 	//fragment shader
-	inFile.open("fragment_core.glsl");//open file
+	inFile.open("Shaders\\fragment_core.glsl");//open file
 
 	if (inFile.is_open()) {//check if file is open
 		while (getline(inFile, temp)) {//read all lines
@@ -169,8 +166,8 @@ int main() {
 	glEnable(GL_BLEND);//enable blending colors
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);//set color thransparent
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);//fill the shape with a color
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//draw only edges
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);//fill the shape with a color
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//draw only edges
 
 	//shader load
 	GLuint coreProgram;//create new shader programs
@@ -186,13 +183,13 @@ int main() {
 	//VBO - buffer for verticles
 	GLuint VBO;
 	glGenBuffers(1, &VBO);//create space to storage vertex
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);//set buffer type to array
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);//set buffer type to array and use it
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);//send data to VBO, graphic card memory
 
 	//EBO - buffer for indices
 	GLuint EBO;
 	glGenBuffers(1, &EBO);//create space to storage indices
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);//set buffer type to element array
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);//set buffer type to element array and use it
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);//send data to EBO, graphic card memory
 
 	//let the graphics cards know what the float array, we send represents.
@@ -204,7 +201,36 @@ int main() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord));//texture
 	glEnableVertexAttribArray(2);//enable texture
 
-	glBindVertexArray(0);//wyjdü z edycji nasze vao
+	glBindVertexArray(0);//Exit editing VAO
+
+	//textures
+	int imageWidth = 0, imageHeight = 0;
+	//load image                           image src            variable width and height  null  rgba-with alfa chanel
+	unsigned char* image = SOIL_load_image("Images\\Light.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+
+	GLuint texture0;
+	glGenTextures(1, &texture0);//create space to texture
+	glBindTexture(GL_TEXTURE_2D, texture0);//set buffer, type to texture 2D and use it
+
+	//set options to texture
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//if texture is smaller then object, texture repet on width
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);//if texture is smaller then object, texture repet on height
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);//antyaliasing to the texture
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//antyaliasing to the texture
+
+	if (!image)//if is not something in image
+	{
+		cout << "texture load fail" << endl;
+	}
+	else {
+		//generate texture image
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageWidth, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+		glGenerateMipmap(GL_TEXTURE_2D);//generate texture in several difren resolutions
+	}
+
+	glActiveTexture(0);//unactivate texture
+	glBindTexture(GL_TEXTURE_2D, 0);//unbind texture
+	SOIL_free_image_data(image);//remove image data from ram
 
 	glClearColor(0, 0, 0, 1);//set clear color to RGBA
 	//main loop
@@ -221,6 +247,13 @@ int main() {
 
 		//use a shader/program
 		glUseProgram(coreProgram);
+		
+		//update uniforms
+		glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0);
+
+		//activate texture
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture0);
 
 		//bind vertex array object
 		glBindVertexArray(VAO);
@@ -232,6 +265,12 @@ int main() {
 		//END
 		glfwSwapBuffers(window);//make thinks faster
 		glFlush();
+
+		//unbind texture
+		glBindVertexArray(0);
+		glUseProgram(0);
+		glActiveTexture(0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	//end
