@@ -4,10 +4,10 @@
 Vertex vertices[] = {
 	//triangle
 	//position					//color					//texcoords
-	vec3(-0.5f,  0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(0.0f, 1.0f),
-	vec3(-0.5f, -0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(0.0f, 0.0f),
-	vec3(0.5f, -0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(1.0f, 0.0f),
-	vec3(0.5f,  0.5f, 0.0f),	vec3(0.0f, 0.0f, 1.0f),	vec2(1.0f, 1.0f)
+	vec3(-0.5f,  0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(0.0f, 1.0f),
+	vec3(-0.5f, -0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(0.0f, 0.0f),
+	vec3( 0.5f, -0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(1.0f, 0.0f),
+	vec3( 0.5f,  0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(1.0f, 1.0f)
 };
 //number of vertices in triangle
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
@@ -126,6 +126,39 @@ bool LoadShaders(GLuint& program)
 	return loadSuccess;
 }
 
+GLuint LoadTexture(string ImageName) {
+	string src = "./Images/" + ImageName + ".png";
+	int imageWidth = 0, imageHeight = 0;
+	//load image                           image src    variable width and height  null  rgba-with alfa chanel
+	unsigned char* image = SOIL_load_image(src.c_str(), &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
+
+	GLuint texture;
+	glGenTextures(1, &texture);//create space to texture
+	glBindTexture(GL_TEXTURE_2D, texture);//set buffer, type to texture 2D and use it
+
+	//set options to texture
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//if texture is smaller then object, texture repet on width
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);//if texture is smaller then object, texture repet on height
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);//antyaliasing to the texture
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//antyaliasing to the texture
+
+	if (!image)//if is not something in image
+	{
+		cout << "texture load fail" << endl;
+	}
+	else {
+		//generate texture image
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageWidth, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+		glGenerateMipmap(GL_TEXTURE_2D);//generate texture in several difren resolutions
+	}
+
+	glActiveTexture(0);//unactivate texture
+	glBindTexture(GL_TEXTURE_2D, 0);//unbind texture
+	SOIL_free_image_data(image);//remove image data from ram
+
+	return texture;
+}
+
 int main() {
 	//init glfw
 	glfwInit();//init glfw
@@ -203,34 +236,11 @@ int main() {
 
 	glBindVertexArray(0);//Exit editing VAO
 
+	vec4 tmp = vec4(1, 2, 3, 4);
+
 	//textures
-	int imageWidth = 0, imageHeight = 0;
-	//load image                           image src            variable width and height  null  rgba-with alfa chanel
-	unsigned char* image = SOIL_load_image("Images\\Light.png", &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-
-	GLuint texture0;
-	glGenTextures(1, &texture0);//create space to texture
-	glBindTexture(GL_TEXTURE_2D, texture0);//set buffer, type to texture 2D and use it
-
-	//set options to texture
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//if texture is smaller then object, texture repet on width
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);//if texture is smaller then object, texture repet on height
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);//antyaliasing to the texture
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//antyaliasing to the texture
-
-	if (!image)//if is not something in image
-	{
-		cout << "texture load fail" << endl;
-	}
-	else {
-		//generate texture image
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageWidth, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-		glGenerateMipmap(GL_TEXTURE_2D);//generate texture in several difren resolutions
-	}
-
-	glActiveTexture(0);//unactivate texture
-	glBindTexture(GL_TEXTURE_2D, 0);//unbind texture
-	SOIL_free_image_data(image);//remove image data from ram
+	GLuint texture0 = LoadTexture("Light");
+	GLuint texture1 = LoadTexture("Box");
 
 	glClearColor(0, 0, 0, 1);//set clear color to RGBA
 	//main loop
@@ -250,10 +260,13 @@ int main() {
 		
 		//update uniforms
 		glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0);
+		glUniform1i(glGetUniformLocation(coreProgram, "texture1"), 1);
 
 		//activate texture
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture1);
 
 		//bind vertex array object
 		glBindVertexArray(VAO);

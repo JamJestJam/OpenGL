@@ -12,10 +12,13 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{0552d4ce-ce45-49a0-a362-d61767021026}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\shader">
+    <Filter Include="Resource Files\Images">
+      <UniqueIdentifier>{f86cc4d4-205c-4498-a24c-5eb2c8f4fc70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{a5edc985-79fa-4a8b-a0ce-9dfbaabd36f6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\shader\core">
+    <Filter Include="Resource Files\Shaders\core">
       <UniqueIdentifier>{8ee787ee-9f4a-4809-8a90-25f6f5e012f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -34,10 +37,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\fragment_core.glsl">
-      <Filter>Resource Files\shader\core</Filter>
+      <Filter>Resource Files\Shaders\core</Filter>
     </None>
     <None Include="Shaders\vertex_core.glsl">
-      <Filter>Resource Files\shader\core</Filter>
+      <Filter>Resource Files\Shaders\core</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Images\Box.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Images\Light.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
   </ItemGroup>
 </Project>
