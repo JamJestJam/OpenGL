@@ -6,16 +6,18 @@ Vertex vertices[] = {
 	//position					//color					//texcoords
 	vec3(-0.5f,  0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(0.0f, 1.0f),
 	vec3(-0.5f, -0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(0.0f, 0.0f),
-	vec3( 0.5f, -0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(1.0f, 0.0f),
-	vec3( 0.5f,  0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(1.0f, 1.0f)
+	vec3(0.5f, -0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(1.0f, 0.0f),
+	vec3(0.5f,  0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(1.0f, 1.0f)
 };
 //number of vertices in triangle
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 
 //use verticles ID
 GLuint indices[] = {
-	0, 1, 2,	//triangle 1
-	0, 2, 3		//triangle 2
+	0, 1, 2,		//triangle 1
+	0, 2, 3,		//triangle 2
+	2, 1, 0,
+	3, 2, 0 
 };
 //number of vertices in use
 unsigned nrOfindices = sizeof(indices) / sizeof(GLuint);
@@ -166,6 +168,8 @@ int main() {
 	//create windows
 	const int windowWidth = 640;//window width in px
 	const int windowheight = 480;//window height in px
+	int framebufferWidth = 0;//drawarea width
+	int framebufferHeight = 0;//drawarea height
 	const char* title = "Ucze sie";//window title
 
 	//glfw setings
@@ -176,6 +180,7 @@ int main() {
 
 	GLFWwindow* window = glfwCreateWindow(windowWidth, windowheight, title, NULL, NULL);//create new window
 
+	glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);//get size of drawarea
 	glfwSetFramebufferSizeCallback(window, Framebuffer_resize_callback);//on window event "resize" callback function
 
 	glfwMakeContextCurrent(window);//show window
@@ -242,6 +247,44 @@ int main() {
 	GLuint texture0 = LoadTexture("Light");
 	GLuint texture1 = LoadTexture("Box");
 
+	//transform 
+	mat4 ModelMatrix(1.f);
+	//transofrm once
+	ModelMatrix = translate(ModelMatrix, vec3(0.f, 0.f, 0.f));//move
+	ModelMatrix = rotate(ModelMatrix, radians(0.f), vec3(1.f, 0.f, 0.f));//rotation x
+	ModelMatrix = rotate(ModelMatrix, radians(0.f), vec3(0.f, 1.f, 0.f));//rotation y 
+	ModelMatrix = rotate(ModelMatrix, radians(0.f), vec3(0.f, 0.f, 1.f));//rotation z
+	ModelMatrix = scale(ModelMatrix, vec3(1.f));//scale
+
+	//camera init
+	vec3 camPosition(0.f, 0.f, 1.f);//camera position
+	vec3 wordUP(0.f, 1.f, 0.f);//coordinate to word up
+	vec3 camFront(0.f, 0.f, -1.f);//coordinate to camera front
+
+	//perpective init
+	mat4 ViewMatrix(1.f);
+	ViewMatrix = lookAt(camPosition, camPosition + camFront, wordUP);//camera look at
+
+	float fov = 90.f;//angle beetwen draw area and line draw
+	float nearPlane = 0.1f;//lenght from camera to draw area
+	float farPlane = 1000.f;//lenght how far can you see
+	mat4 ProjectionMatrix(1.f);
+	ProjectionMatrix = perspective(
+		radians(fov),
+		static_cast<float>(framebufferWidth) / framebufferHeight,
+		nearPlane,
+		farPlane
+	);
+
+	//use transofrmation
+	glUseProgram(coreProgram);//use vertex shader
+	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ModelMatrix"), 1, GL_FALSE, value_ptr(ModelMatrix));//send matrix 4v4 
+	//use perspective
+	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ViewMatrix"), 1, GL_FALSE, value_ptr(ViewMatrix));//send matrix 4v4
+	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ProjectionMatrix"), 1, GL_FALSE, value_ptr(ProjectionMatrix));//send matrix 4v4
+
+	glUseProgram(0);//stop using vertex shader
+
 	glClearColor(0, 0, 0, 1);//set clear color to RGBA
 	//main loop
 	while (!glfwWindowShouldClose(window))//while window is not closed
@@ -257,10 +300,30 @@ int main() {
 
 		//use a shader/program
 		glUseProgram(coreProgram);
-		
+
 		//update uniforms
 		glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0);
 		glUniform1i(glGetUniformLocation(coreProgram, "texture1"), 1);
+
+		//move rotate and scale every loop
+		ModelMatrix = translate(ModelMatrix, vec3(0.f, 0.f, 0.f));//move
+		ModelMatrix = rotate(ModelMatrix, radians(1.f), vec3(1.f, 0.f, 0.f));//rotation x
+		ModelMatrix = rotate(ModelMatrix, radians(0.f), vec3(0.f, 1.f, 0.f));//rotation y 
+		ModelMatrix = rotate(ModelMatrix, radians(0.f), vec3(0.f, 0.f, 1.f));//rotation z
+		ModelMatrix = scale(ModelMatrix, vec3(1.f));//scale
+		//use new tranformations
+		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ModelMatrix"), 1, GL_FALSE, value_ptr(ModelMatrix));//send matrix 4v4
+
+		//use perspective
+		glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);//get size of drawarea //it must be change its only for test
+		ProjectionMatrix = mat4(1.f);
+		ProjectionMatrix = perspective(
+			radians(fov),
+			static_cast<float>(framebufferWidth) / framebufferHeight,
+			nearPlane,
+			farPlane
+		);
+		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ProjectionMatrix"), 1, GL_FALSE, value_ptr(ProjectionMatrix));//send matrix 4v4
 
 		//activate texture
 		glActiveTexture(GL_TEXTURE0);
