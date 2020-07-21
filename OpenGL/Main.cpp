@@ -161,6 +161,33 @@ GLuint LoadTexture(string ImageName) {
 	return texture;
 }
 
+void UpdateInput(GLFWwindow *window, vec3& position, vec3& rotation, vec3& scale) {
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {//check if esc key is press
+		position.z -= 0.01f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {//check if esc key is press
+		position.x -= 0.01f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {//check if esc key is press
+		position.z += 0.01f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {//check if esc key is press
+		position.x += 0.01f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {//check if esc key is press
+		rotation.y -= 1.f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {//check if esc key is press
+		rotation.y += 1.f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {//check if esc key is press
+		scale += 0.1f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {//check if esc key is press
+		scale -= 0.1f;
+	}
+}
+
 int main() {
 	//init glfw
 	glfwInit();//init glfw
@@ -249,12 +276,17 @@ int main() {
 
 	//transform 
 	mat4 ModelMatrix(1.f);
+
+	vec3 position(0.f);
+	vec3 rotation(0.f);
+	vec3 scale(1.f);
+
 	//transofrm once
-	ModelMatrix = translate(ModelMatrix, vec3(0.f, 0.f, 0.f));//move
-	ModelMatrix = rotate(ModelMatrix, radians(0.f), vec3(1.f, 0.f, 0.f));//rotation x
-	ModelMatrix = rotate(ModelMatrix, radians(0.f), vec3(0.f, 1.f, 0.f));//rotation y 
-	ModelMatrix = rotate(ModelMatrix, radians(0.f), vec3(0.f, 0.f, 1.f));//rotation z
-	ModelMatrix = scale(ModelMatrix, vec3(1.f));//scale
+	ModelMatrix = translate(ModelMatrix, position);//move
+	ModelMatrix = rotate(ModelMatrix, radians(rotation.x), vec3(1.f, 0.f, 0.f));//rotation x
+	ModelMatrix = rotate(ModelMatrix, radians(rotation.y), vec3(0.f, 1.f, 0.f));//rotation y 
+	ModelMatrix = rotate(ModelMatrix, radians(rotation.z), vec3(0.f, 0.f, 1.f));//rotation z
+	ModelMatrix = glm::scale(ModelMatrix, scale);//scale
 
 	//camera init
 	vec3 camPosition(0.f, 0.f, 1.f);//camera position
@@ -294,6 +326,7 @@ int main() {
 
 		//Update logic
 		UpdateInput(window);
+		UpdateInput(window, position, rotation, scale);
 
 		//Clear
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);//clear draw area
@@ -306,11 +339,12 @@ int main() {
 		glUniform1i(glGetUniformLocation(coreProgram, "texture1"), 1);
 
 		//move rotate and scale every loop
-		ModelMatrix = translate(ModelMatrix, vec3(0.f, 0.f, 0.f));//move
-		ModelMatrix = rotate(ModelMatrix, radians(1.f), vec3(1.f, 0.f, 0.f));//rotation x
-		ModelMatrix = rotate(ModelMatrix, radians(0.f), vec3(0.f, 1.f, 0.f));//rotation y 
-		ModelMatrix = rotate(ModelMatrix, radians(0.f), vec3(0.f, 0.f, 1.f));//rotation z
-		ModelMatrix = scale(ModelMatrix, vec3(1.f));//scale
+		ModelMatrix = mat4(1.f);
+		ModelMatrix = translate(ModelMatrix, position);//move
+		ModelMatrix = rotate(ModelMatrix, radians(rotation.x), vec3(1.f, 0.f, 0.f));//rotation x
+		ModelMatrix = rotate(ModelMatrix, radians(rotation.y), vec3(0.f, 1.f, 0.f));//rotation y 
+		ModelMatrix = rotate(ModelMatrix, radians(rotation.z), vec3(0.f, 0.f, 1.f));//rotation z
+		ModelMatrix = glm::scale(ModelMatrix, scale);//scale
 		//use new tranformations
 		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ModelMatrix"), 1, GL_FALSE, value_ptr(ModelMatrix));//send matrix 4v4
 
