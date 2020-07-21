@@ -309,7 +309,7 @@ int main() {
 	);
 
 	//Light
-	vec3 lightPos0(0.f,0.f,2.f);//light position
+	vec3 lightPos0(0.f,0.f,0.f);//light position
 
 	//use transofrmation
 	glUseProgram(coreProgram);//use vertex shader
@@ -319,6 +319,7 @@ int main() {
 	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ProjectionMatrix"), 1, GL_FALSE, value_ptr(ProjectionMatrix));//send matrix 4v4
 	//use light
 	glUniform3fv(glGetUniformLocation(coreProgram, "LightPos0"), 1, value_ptr(lightPos0));
+	glUniform3fv(glGetUniformLocation(coreProgram, "CameraPos"), 1, value_ptr(camPosition));
 
 	glUseProgram(0);//stop using vertex shader
 
