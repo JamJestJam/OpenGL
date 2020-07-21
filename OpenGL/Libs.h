@@ -26,6 +26,9 @@
 //load imagest etc
 #include <SOIL2.h>
 
+//include our class
+#include "Shader.h";
+
 using namespace std;
 using namespace glm;
 

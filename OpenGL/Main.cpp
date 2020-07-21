@@ -32,100 +32,6 @@ void Framebuffer_resize_callback(GLFWwindow* win, int frameBufferWidth, int fram
 	glViewport(0, 0, frameBufferWidth, frameBufferHeight);//set new draw area size
 }
 
-//function to load shader
-bool LoadShaders(GLuint& program)
-{
-	bool loadSuccess = true;
-	char infoLog[512];//info about errors for example. program isn't able to link or a shader isn't able to compile etc.
-	GLint success;//this will be used to determine if the shader has loaded correctly
-
-	string temp = "";//used to get line
-	string src = "";//save data
-
-	ifstream inFile;//fsteream file
-
-	//vertex shader
-	inFile.open("Shaders\\vertex_core.glsl");//open file
-
-	if (inFile.is_open()) {//check if file is open
-		while (getline(inFile, temp)) {//read all lines
-			src += temp + "\n";//add line to src
-		}
-	}
-	else {//if is not open
-		cout << "Shader init failed, vertex read file\n";//show error
-		loadSuccess = false;
-	}
-	inFile.close();//close file
-
-	//create vertex shader
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);//create shader id
-	const GLchar* vertSrc = src.c_str();//create shader source
-	glShaderSource(vertexShader, 1, &vertSrc, NULL);//set shader source
-	glCompileShader(vertexShader);//compile vertex shader
-
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);//get compile status
-	if (!success) {//error check
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		cout << "Shader init failed, vertex compile error\n";//show error
-		cout << infoLog << endl;//show shader log 
-		loadSuccess = false;
-	}
-
-	temp = "";//clear temp
-	src = "";//clear src
-
-	//fragment shader
-	inFile.open("Shaders\\fragment_core.glsl");//open file
-
-	if (inFile.is_open()) {//check if file is open
-		while (getline(inFile, temp)) {//read all lines
-			src += temp + "\n";//add line to src
-		}
-	}
-	else {//if is not open
-		cout << "Shader init failed, fragment read file\n";//show error
-		loadSuccess = false;
-	}
-	inFile.close();//close file
-
-	//create fragment shader
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);//create shader id
-	const GLchar* fragtSrc = src.c_str();//create shader source
-	glShaderSource(fragmentShader, 1, &fragtSrc, NULL);//set shader source
-	glCompileShader(fragmentShader);//compile vertex shader
-
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);//get compile status
-	if (!success) {//error check
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		cout << "Shader init failed, fragment compile error\n";//show error
-		cout << infoLog << endl;//show shader log 
-		loadSuccess = false;
-	}
-
-	//program
-	program = glCreateProgram();//create program
-
-	glAttachShader(program, vertexShader);//attach shader
-	glAttachShader(program, fragmentShader);//attach shader
-	glLinkProgram(program);//connect everything together
-
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(fragmentShader, 512, NULL, infoLog);
-		cout << "Program linking error\n";//show error
-		cout << infoLog << endl;//show program log 
-		loadSuccess = false;
-	}
-
-	//end of program
-	glUseProgram(0);//reset program which is currently using
-	glDeleteShader(vertexShader);//delete shader !important
-	glDeleteShader(fragmentShader);//delete shader !important
-
-	return loadSuccess;
-}
-
 GLuint LoadTexture(string ImageName) {
 	string src = "./Images/" + ImageName + ".png";
 	int imageWidth = 0, imageHeight = 0;
@@ -233,10 +139,8 @@ int main() {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//draw only edges
 
 	//shader load
-	GLuint coreProgram;//create new shader programs
-	if (!LoadShaders(coreProgram)) {//load shaders & check if is success
-		glfwTerminate();
-	}
+	Shader coreProgram("vertex_core.glsl", "fragment_core.glsl");
+	
 
 	//VAO - buffer for 3D objects
 	GLuint VAO;
@@ -312,14 +216,13 @@ int main() {
 	vec3 lightPos0(0.f,0.f,0.f);//light position
 
 	//use transofrmation
-	glUseProgram(coreProgram);//use vertex shader
-	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ModelMatrix"), 1, GL_FALSE, value_ptr(ModelMatrix));//send matrix 4v4 
+	coreProgram.SetValueMat4(ModelMatrix, "ModelMatrix");//use transformations
 	//use perspective
-	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ViewMatrix"), 1, GL_FALSE, value_ptr(ViewMatrix));//send matrix 4v4
-	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ProjectionMatrix"), 1, GL_FALSE, value_ptr(ProjectionMatrix));//send matrix 4v4
+	coreProgram.SetValueMat4(ViewMatrix, "ViewMatrix");
+	coreProgram.SetValueMat4(ProjectionMatrix, "ProjectionMatrix");
 	//use light
-	glUniform3fv(glGetUniformLocation(coreProgram, "LightPos0"), 1, value_ptr(lightPos0));
-	glUniform3fv(glGetUniformLocation(coreProgram, "CameraPos"), 1, value_ptr(camPosition));
+	coreProgram.SetValueVec3(lightPos0, "LightPos0");
+	coreProgram.SetValueVec3(camPosition, "CameraPos");
 
 	glUseProgram(0);//stop using vertex shader
 
@@ -337,12 +240,9 @@ int main() {
 		//Clear
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);//clear draw area
 
-		//use a shader/program
-		glUseProgram(coreProgram);
-
 		//update uniforms
-		glUniform1i(glGetUniformLocation(coreProgram, "texture0"), 0);
-		glUniform1i(glGetUniformLocation(coreProgram, "texture1"), 1);
+		coreProgram.SetValue1i(0, "texture0");
+		coreProgram.SetValue1i(1, "texture1");
 
 		//move rotate and scale every loop
 		ModelMatrix = mat4(1.f);
@@ -352,7 +252,7 @@ int main() {
 		ModelMatrix = rotate(ModelMatrix, radians(rotation.z), vec3(0.f, 0.f, 1.f));//rotation z
 		ModelMatrix = glm::scale(ModelMatrix, scale);//scale
 		//use new tranformations
-		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ModelMatrix"), 1, GL_FALSE, value_ptr(ModelMatrix));//send matrix 4v4
+		coreProgram.SetValueMat4(ModelMatrix, "ModelMatrix");
 
 		//use perspective
 		glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);//get size of drawarea //it must be change its only for test
@@ -363,7 +263,10 @@ int main() {
 			nearPlane,
 			farPlane
 		);
-		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ProjectionMatrix"), 1, GL_FALSE, value_ptr(ProjectionMatrix));//send matrix 4v4
+		coreProgram.SetValueMat4(ProjectionMatrix, "ProjectionMatrix");
+
+		//use a shader/program
+		coreProgram.Use();
 
 		//activate texture
 		glActiveTexture(GL_TEXTURE0);
@@ -387,14 +290,13 @@ int main() {
 		glUseProgram(0);
 		glActiveTexture(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		coreProgram.UnUse();
 	}
 
 	//end
 	glfwDestroyWindow(window);//close window
 	glfwTerminate();//close draw area
-
-	//delete program
-	glDeleteProgram(coreProgram);
 
 	return 0;
 }

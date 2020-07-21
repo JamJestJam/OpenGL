@@ -30,19 +30,20 @@ void main()
 	vec3 lightToPosDirVer = normalize(LightPos0 - vs_position);
 	vec3 reflectDirVec = normalize(reflect(lightToPosDirVer, normalize(vs_normal)));
 	vec3 posToViewDirVec = normalize(vs_position - CameraPos);
-	float specularConstent = pow(max(dot(posToViewDirVec, reflectDirVec), 0), 300);
+	float specularConstent = pow(max(dot(posToViewDirVec, reflectDirVec), 0), 30);
 	vec3 specularFinal = diffuseColor * specularConstent;
 
 	//Attenuation
 
 	//mix together
 	fs_color = 
-				//texture(texture0, vs_texcoord) *							//texture0
+				texture(texture0, vs_texcoord) *							//texture0
 				texture(texture1, vs_texcoord) *							//texture1
 				vec4(vs_color, 1.f) *										//vertex color
 				(
 					vec4(ambientLight, 1.f) +								//Ambient
 					vec4(diffuseFinal, 1.f) +								//Diffuse
 					vec4(specularFinal, 1.f)								//Specular
-				);								
+				);			
+	
 } 
