@@ -3,11 +3,11 @@
 //triangle 
 Vertex vertices[] = {
 	//triangle
-	//position					//color					//texcoords
-	vec3(-0.5f,  0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(0.0f, 1.0f),
-	vec3(-0.5f, -0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(0.0f, 0.0f),
-	vec3(0.5f, -0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(1.0f, 0.0f),
-	vec3(0.5f,  0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(1.0f, 1.0f)
+	//position					//color					//texcoords			//normal
+	vec3(-0.5f,  0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(0.0f, 1.0f),	vec3(0.0f, 0.0f, -1.0f),
+	vec3(-0.5f, -0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(0.0f, 0.0f),	vec3(0.0f, 0.0f, -1.0f),
+	vec3(0.5f, -0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(1.0f, 0.0f),	vec3(0.0f, 0.0f, -1.0f),
+	vec3(0.5f,  0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(1.0f, 1.0f),	vec3(0.0f, 0.0f, -1.0f)
 };
 //number of vertices in triangle
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
@@ -15,9 +15,7 @@ unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 //use verticles ID
 GLuint indices[] = {
 	0, 1, 2,		//triangle 1
-	0, 2, 3,		//triangle 2
-	2, 1, 0,
-	3, 2, 0 
+	0, 2, 3			//triangle 2
 };
 //number of vertices in use
 unsigned nrOfindices = sizeof(indices) / sizeof(GLuint);
@@ -265,6 +263,8 @@ int main() {
 	glEnableVertexAttribArray(1);//enable color
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord));//texture
 	glEnableVertexAttribArray(2);//enable texture
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));//texture
+	glEnableVertexAttribArray(3);//enable normal
 
 	glBindVertexArray(0);//Exit editing VAO
 
@@ -308,12 +308,17 @@ int main() {
 		farPlane
 	);
 
+	//Light
+	vec3 lightPos0(0.f,0.f,2.f);//light position
+
 	//use transofrmation
 	glUseProgram(coreProgram);//use vertex shader
 	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ModelMatrix"), 1, GL_FALSE, value_ptr(ModelMatrix));//send matrix 4v4 
 	//use perspective
 	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ViewMatrix"), 1, GL_FALSE, value_ptr(ViewMatrix));//send matrix 4v4
 	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ProjectionMatrix"), 1, GL_FALSE, value_ptr(ProjectionMatrix));//send matrix 4v4
+	//use light
+	glUniform3fv(glGetUniformLocation(coreProgram, "LightPos0"), 1, value_ptr(lightPos0));
 
 	glUseProgram(0);//stop using vertex shader
 
