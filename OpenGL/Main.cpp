@@ -20,52 +20,15 @@ GLuint indices[] = {
 //number of vertices in use
 unsigned nrOfindices = sizeof(indices) / sizeof(GLuint);
 
-//function to update input state
-void UpdateInput(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {//check if esc key is press
-		glfwSetWindowShouldClose(window, GLFW_TRUE);//close window
-	}
-}
-
 //function load on resize window
 void Framebuffer_resize_callback(GLFWwindow* win, int frameBufferWidth, int frameBufferHeight) {
 	glViewport(0, 0, frameBufferWidth, frameBufferHeight);//set new draw area size
 }
 
-GLuint LoadTexture(string ImageName) {
-	string src = "./Images/" + ImageName + ".png";
-	int imageWidth = 0, imageHeight = 0;
-	//load image                           image src    variable width and height  null  rgba-with alfa chanel
-	unsigned char* image = SOIL_load_image(src.c_str(), &imageWidth, &imageHeight, NULL, SOIL_LOAD_RGBA);
-
-	GLuint texture;
-	glGenTextures(1, &texture);//create space to texture
-	glBindTexture(GL_TEXTURE_2D, texture);//set buffer, type to texture 2D and use it
-
-	//set options to texture
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);//if texture is smaller then object, texture repet on width
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);//if texture is smaller then object, texture repet on height
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);//antyaliasing to the texture
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//antyaliasing to the texture
-
-	if (!image)//if is not something in image
-	{
-		cout << "texture load fail" << endl;
-	}
-	else {
-		//generate texture image
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageWidth, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-		glGenerateMipmap(GL_TEXTURE_2D);//generate texture in several difren resolutions
-	}
-
-	glActiveTexture(0);//unactivate texture
-	glBindTexture(GL_TEXTURE_2D, 0);//unbind texture
-	SOIL_free_image_data(image);//remove image data from ram
-
-	return texture;
-}
-
 void UpdateInput(GLFWwindow *window, vec3& position, vec3& rotation, vec3& scale) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {//check if esc key is press
+		glfwSetWindowShouldClose(window, GLFW_TRUE);//close window
+	}
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {//check if esc key is press
 		position.z -= 0.01f;
 	}
@@ -140,7 +103,6 @@ int main() {
 
 	//shader load
 	Shader coreProgram("vertex_core.glsl", "fragment_core.glsl");
-	
 
 	//VAO - buffer for 3D objects
 	GLuint VAO;
@@ -175,8 +137,8 @@ int main() {
 	vec4 tmp = vec4(1, 2, 3, 4);
 
 	//textures
-	GLuint texture0 = LoadTexture("Light");
-	GLuint texture1 = LoadTexture("Box");
+	Texture texture0("Light", 100);
+	Texture texture1("Box", 23);
 
 	//transform 
 	mat4 ModelMatrix(1.f);
@@ -234,15 +196,14 @@ int main() {
 		glfwPollEvents();
 
 		//Update logic
-		UpdateInput(window);
 		UpdateInput(window, position, rotation, scale);
 
 		//Clear
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);//clear draw area
 
 		//update uniforms
-		coreProgram.SetValue1i(0, "texture0");
-		coreProgram.SetValue1i(1, "texture1");
+		coreProgram.SetValue1i(texture0.GetTextureUnit(), "texture0");
+		coreProgram.SetValue1i(texture1.GetTextureUnit(), "texture1");
 
 		//move rotate and scale every loop
 		ModelMatrix = mat4(1.f);
@@ -269,10 +230,8 @@ int main() {
 		coreProgram.Use();
 
 		//activate texture
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture0);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture1);
+		texture0.Bind();
+		texture1.Bind();
 
 		//bind vertex array object
 		glBindVertexArray(VAO);

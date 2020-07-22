@@ -27,7 +27,8 @@
 #include <SOIL2.h>
 
 //include our class
-#include "Shader.h";
+#include "Shader.h"
+#include "Texture.h"
 
 using namespace std;
 using namespace glm;
