@@ -3,11 +3,11 @@
 //triangle 
 Vertex vertices[] = {
 	//triangle
-	//position					//color					//texcoords			//normal
-	vec3(-0.5f,  0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(0.0f, 1.0f),	vec3(0.0f, 0.0f, -1.0f),
-	vec3(-0.5f, -0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(0.0f, 0.0f),	vec3(0.0f, 0.0f, -1.0f),
-	vec3(0.5f, -0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(1.0f, 0.0f),	vec3(0.0f, 0.0f, -1.0f),
-	vec3(0.5f,  0.5f, 0.0f),	vec3(1.0f, 1.0f, 1.0f),	vec2(1.0f, 1.0f),	vec3(0.0f, 0.0f, -1.0f)
+	//position						//color							//texcoords				//normal
+	glm::vec3(-0.5f,  0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(0.0f, 1.0f),	glm::vec3(0.0f, 0.0f, -1.0f),
+	glm::vec3(-0.5f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(0.0f, 0.0f),	glm::vec3(0.0f, 0.0f, -1.0f),
+	glm::vec3(0.5f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(1.0f, 0.0f),	glm::vec3(0.0f, 0.0f, -1.0f),
+	glm::vec3(0.5f,  0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(1.0f, 1.0f),	glm::vec3(0.0f, 0.0f, -1.0f)
 };
 //number of vertices in triangle
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
@@ -25,7 +25,7 @@ void Framebuffer_resize_callback(GLFWwindow* win, int frameBufferWidth, int fram
 	glViewport(0, 0, frameBufferWidth, frameBufferHeight);//set new draw area size
 }
 
-void UpdateInput(GLFWwindow *window, vec3& position, vec3& rotation, vec3& scale) {
+void UpdateInput(GLFWwindow* window, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {//check if esc key is press
 		glfwSetWindowShouldClose(window, GLFW_TRUE);//close window
 	}
@@ -134,48 +134,51 @@ int main() {
 
 	glBindVertexArray(0);//Exit editing VAO
 
-	vec4 tmp = vec4(1, 2, 3, 4);
+	glm::vec4 tmp = glm::vec4(1, 2, 3, 4);
 
 	//textures
 	Texture texture0("Light", 100);
 	Texture texture1("Box", 23);
 
-	//transform 
-	mat4 ModelMatrix(1.f);
+	//material 0
+	Material material(glm::vec3(1.008f), glm::vec3(1.f), glm::vec3(1.f), texture0.GetTextureUnit(), texture1.GetTextureUnit());
 
-	vec3 position(0.f);
-	vec3 rotation(0.f);
-	vec3 scale(1.f);
+	//transform 
+	glm::mat4 ModelMatrix(1.f);
+
+	glm::vec3 position(0.f);
+	glm::vec3 rotation(0.f);
+	glm::vec3 scale(1.f);
 
 	//transofrm once
 	ModelMatrix = translate(ModelMatrix, position);//move
-	ModelMatrix = rotate(ModelMatrix, radians(rotation.x), vec3(1.f, 0.f, 0.f));//rotation x
-	ModelMatrix = rotate(ModelMatrix, radians(rotation.y), vec3(0.f, 1.f, 0.f));//rotation y 
-	ModelMatrix = rotate(ModelMatrix, radians(rotation.z), vec3(0.f, 0.f, 1.f));//rotation z
+	ModelMatrix = rotate(ModelMatrix, glm::radians(rotation.x), glm::vec3(1.f, 0.f, 0.f));//rotation x
+	ModelMatrix = rotate(ModelMatrix, glm::radians(rotation.y), glm::vec3(0.f, 1.f, 0.f));//rotation y 
+	ModelMatrix = rotate(ModelMatrix, glm::radians(rotation.z), glm::vec3(0.f, 0.f, 1.f));//rotation z
 	ModelMatrix = glm::scale(ModelMatrix, scale);//scale
 
 	//camera init
-	vec3 camPosition(0.f, 0.f, 1.f);//camera position
-	vec3 wordUP(0.f, 1.f, 0.f);//coordinate to word up
-	vec3 camFront(0.f, 0.f, -1.f);//coordinate to camera front
+	glm::vec3 camPosition(0.f, 0.f, 1.f);//camera position
+	glm::vec3 wordUP(0.f, 1.f, 0.f);//coordinate to word up
+	glm::vec3 camFront(0.f, 0.f, -1.f);//coordinate to camera front
 
 	//perpective init
-	mat4 ViewMatrix(1.f);
+	glm::mat4 ViewMatrix(1.f);
 	ViewMatrix = lookAt(camPosition, camPosition + camFront, wordUP);//camera look at
 
 	float fov = 90.f;//angle beetwen draw area and line draw
 	float nearPlane = 0.1f;//lenght from camera to draw area
 	float farPlane = 1000.f;//lenght how far can you see
-	mat4 ProjectionMatrix(1.f);
-	ProjectionMatrix = perspective(
-		radians(fov),
+	glm::mat4 ProjectionMatrix(1.f);
+	ProjectionMatrix = glm::perspective(
+		glm::radians(fov),
 		static_cast<float>(framebufferWidth) / framebufferHeight,
 		nearPlane,
 		farPlane
 	);
 
 	//Light
-	vec3 lightPos0(0.f,0.f,0.f);//light position
+	glm::vec3 lightPos0(0.f, 0.f, 0.f);//light position
 
 	//use transofrmation
 	coreProgram.SetValueMat4(ModelMatrix, "ModelMatrix");//use transformations
@@ -201,30 +204,31 @@ int main() {
 		//Clear
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);//clear draw area
 
-		//update uniforms
-		coreProgram.SetValue1i(texture0.GetTextureUnit(), "texture0");
-		coreProgram.SetValue1i(texture1.GetTextureUnit(), "texture1");
+		
 
 		//move rotate and scale every loop
-		ModelMatrix = mat4(1.f);
+		ModelMatrix = glm::mat4(1.f);
 		ModelMatrix = translate(ModelMatrix, position);//move
-		ModelMatrix = rotate(ModelMatrix, radians(rotation.x), vec3(1.f, 0.f, 0.f));//rotation x
-		ModelMatrix = rotate(ModelMatrix, radians(rotation.y), vec3(0.f, 1.f, 0.f));//rotation y 
-		ModelMatrix = rotate(ModelMatrix, radians(rotation.z), vec3(0.f, 0.f, 1.f));//rotation z
+		ModelMatrix = rotate(ModelMatrix, glm::radians(rotation.x), glm::vec3(1.f, 0.f, 0.f));//rotation x
+		ModelMatrix = rotate(ModelMatrix, glm::radians(rotation.y), glm::vec3(0.f, 1.f, 0.f));//rotation y 
+		ModelMatrix = rotate(ModelMatrix, glm::radians(rotation.z), glm::vec3(0.f, 0.f, 1.f));//rotation z
 		ModelMatrix = glm::scale(ModelMatrix, scale);//scale
 		//use new tranformations
 		coreProgram.SetValueMat4(ModelMatrix, "ModelMatrix");
 
 		//use perspective
 		glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);//get size of drawarea //it must be change its only for test
-		ProjectionMatrix = mat4(1.f);
-		ProjectionMatrix = perspective(
-			radians(fov),
+		ProjectionMatrix = glm::mat4(1.f);
+		ProjectionMatrix = glm::perspective(
+			glm::radians(fov),
 			static_cast<float>(framebufferWidth) / framebufferHeight,
 			nearPlane,
 			farPlane
 		);
 		coreProgram.SetValueMat4(ProjectionMatrix, "ProjectionMatrix");
+
+		//update uniforms
+		material.sendToShader(coreProgram);
 
 		//use a shader/program
 		coreProgram.Use();
@@ -232,6 +236,7 @@ int main() {
 		//activate texture
 		texture0.Bind();
 		texture1.Bind();
+
 
 		//bind vertex array object
 		glBindVertexArray(VAO);

@@ -29,14 +29,13 @@
 //include our class
 #include "Shader.h"
 #include "Texture.h"
-
-using namespace std;
-using namespace glm;
+#include "Material.h"
 
 //base point in 3D
 struct Vertex {
-	vec3 position;
-	vec3 color;
-	vec2 texcoord;
-	vec3 normal;
+	glm::vec3 position;
+	glm::vec3 color;
+	glm::vec2 texcoord;
+	glm::vec3 normal;
 };
+

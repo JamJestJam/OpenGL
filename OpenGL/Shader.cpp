@@ -20,14 +20,14 @@ Shader::~Shader() {
 	glDeleteProgram(this->ID);//delete program from VRAM
 }
 
-string Shader::LoadShaderSource(const char* shaderName) {
-	string temp = "";//used to get line
-	string src = "";//save data
+std::string Shader::LoadShaderSource(const char* shaderName) {
+	std::string temp = "";//used to get line
+	std::string src = "";//save data
 
-	ifstream inFile;//fsteream
+	std::ifstream inFile;//fsteream
 
 	//vertex shader
-	inFile.open(".\\Shaders\\"+string(shaderName));//open file
+	inFile.open(".\\Shaders\\"+std::string(shaderName));//open file
 
 	if (inFile.is_open()) {//check if file is open
 		while (getline(inFile, temp)) {//read all lines
@@ -35,7 +35,7 @@ string Shader::LoadShaderSource(const char* shaderName) {
 		}
 	}
 	else {//if is not open
-		cout << "ERROR::SHADER::COULD_NOT_OPEN_FILE::" << shaderName << endl;//show error
+		std::cout << "ERROR::SHADER::COULD_NOT_OPEN_FILE::" << shaderName << std::endl;//show error
 	}
 	inFile.close();//close file
 
@@ -48,7 +48,7 @@ GLuint Shader::LoadShader(GLenum type, const char* shaderName) {
 	GLint success;//this will be used to determine if the shader has loaded correctly
 
 	GLuint shader = glCreateShader(type);//create shader id;
-	string src_src = this->LoadShaderSource(shaderName);
+	std::string src_src = this->LoadShaderSource(shaderName);
 	const GLchar* src = src_src.c_str();//create shader source
 	glShaderSource(shader, 1, &src, NULL);//set shader source
 	glCompileShader(shader);//compile vertex shader
@@ -56,8 +56,8 @@ GLuint Shader::LoadShader(GLenum type, const char* shaderName) {
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);//get compile status
 	if (!success) {//error check
 		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		cout << "ERROR::LOADSHADERS::COULD_NOT_COMPILE_SHADER::" << shaderName << endl;//show error
-		cout << infoLog << endl;//show shader log 
+		std::cout << "ERROR::LOADSHADERS::COULD_NOT_COMPILE_SHADER::" << shaderName << std::endl;//show error
+		std::cout << infoLog << std::endl;//show shader log 
 	}
 
 	return shader;
@@ -78,8 +78,8 @@ void Shader::linkProgram(GLuint vertexShader, GLuint geometryShader, GLuint frag
 	glGetProgramiv(this->ID, GL_LINK_STATUS, &success);//get program status
 	if (!success) {//if status is bad
 		glGetProgramInfoLog(this->ID, 512, NULL, infoLog);//get error code
-		cout << "ERROR::SHADER::COULD_NOT_LINK_PROGRAM" << endl;//show error
-		cout << infoLog << endl;//show program log 
+		std::cout << "ERROR::SHADER::COULD_NOT_LINK_PROGRAM" << std::endl;//show error
+		std::cout << infoLog << std::endl;//show program log 
 	}
 }
 
@@ -91,7 +91,7 @@ void Shader::UnUse() {
 	glUseProgram(0);
 }
 
-void Shader::SetValueMat4(mat4 value, const GLchar* name, GLboolean transpose) {
+void Shader::SetValueMat4(glm::mat4 value, const GLchar* name, GLboolean transpose) {
 	this->Use();//use program
 
 	glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, transpose, glm::value_ptr(value));//set value
@@ -99,7 +99,7 @@ void Shader::SetValueMat4(mat4 value, const GLchar* name, GLboolean transpose) {
 	this->UnUse();//stop using program
 }
 
-void Shader::SetValueMat3(mat3 value, const GLchar* name, GLboolean transpose) {
+void Shader::SetValueMat3(glm::mat3 value, const GLchar* name, GLboolean transpose) {
 	this->Use();//use program
 
 	glUniformMatrix3fv(glGetUniformLocation(this->ID, name), 1, transpose, glm::value_ptr(value));//set value
@@ -107,7 +107,7 @@ void Shader::SetValueMat3(mat3 value, const GLchar* name, GLboolean transpose) {
 	this->UnUse();//stop using program
 }
 
-void Shader::SetValueVec4(fvec4 value, const GLchar* name) {
+void Shader::SetValueVec4(glm::fvec4 value, const GLchar* name) {
 	this->Use();//use program
 
 	glUniform4fv(glGetUniformLocation(this->ID, name), 1, glm::value_ptr(value));//set value
@@ -115,7 +115,7 @@ void Shader::SetValueVec4(fvec4 value, const GLchar* name) {
 	this->UnUse();//stop using program
 }
 
-void Shader::SetValueVec3(fvec3 value, const GLchar* name){
+void Shader::SetValueVec3(glm::fvec3 value, const GLchar* name){
 	this->Use();//use program
 
 	glUniform3fv(glGetUniformLocation(this->ID, name), 1, glm::value_ptr(value));//set value
@@ -123,7 +123,7 @@ void Shader::SetValueVec3(fvec3 value, const GLchar* name){
 	this->UnUse();//stop using program
 }
 
-void Shader::SetValueVec2(fvec2 value, const GLchar* name) {
+void Shader::SetValueVec2(glm::fvec2 value, const GLchar* name) {
 	this->Use();//use program
 
 	glUniform2fv(glGetUniformLocation(this->ID, name), 1, glm::value_ptr(value));//set value

@@ -1,6 +1,10 @@
 #pragma once
 
-#include "Libs.h";
+#include <iostream>
+#include <string>
+#include <SOIL2.h>
+#include <glm.hpp>
+#include <glew.h>
 
 class Texture {
 public:

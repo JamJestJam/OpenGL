@@ -1,11 +1,11 @@
 #include "Texture.h"
 
-Texture::Texture(string textureName, GLint texture_unit, GLenum type) {
+Texture::Texture(std::string textureName, GLint texture_unit, GLenum type) {
 	//save data
 	this->type = type;
 	this->textureUnit = texture_unit;
 	//image location
-	string src = "./Images/" + textureName + ".png";
+	std::string src = "./Images/" + textureName + ".png";
 	//load image                        
 	unsigned char* image = SOIL_load_image(src.c_str(), &this->width, &this->height, NULL, SOIL_LOAD_RGBA);
 
@@ -20,7 +20,7 @@ Texture::Texture(string textureName, GLint texture_unit, GLenum type) {
 
 	if (!image)//if is not something in image
 	{
-		cout << "ERROR::TEXTURE::TEXTURE_LOAD_FAIL::" << src << endl;
+		std::cout << "ERROR::TEXTURE::TEXTURE_LOAD_FAIL::" << src << std::endl;
 	}
 	else {
 		//generate texture image
@@ -37,13 +37,12 @@ Texture::~Texture() {
 	glDeleteTextures(1, &this->ID);//delete texture
 }
 
-void Texture::LoadFromFile(string textureName)
-{
+void Texture::LoadFromFile(std::string textureName) {
 	if (this->ID)
 		glDeleteTextures(1, &this->ID);
 
 	//image location
-	string src = "./Images/" + textureName + ".png";
+	std::string src = "./Images/" + textureName + ".png";
 	//load image                        
 	unsigned char* image = SOIL_load_image(src.c_str(), &this->width, &this->height, NULL, SOIL_LOAD_RGBA);
 
@@ -58,7 +57,7 @@ void Texture::LoadFromFile(string textureName)
 
 	if (!image)//if is not something in image
 	{
-		cout << "ERROR::TEXTURE::LOAD_FROM_FILE::TEXTURE_LOAD_FAIL::" << src << endl;
+		std::cout << "ERROR::TEXTURE::LOAD_FROM_FILE::TEXTURE_LOAD_FAIL::" << src << std::endl;
 	}
 	else {
 		//generate texture image

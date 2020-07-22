@@ -1,6 +1,13 @@
 #pragma once
 
-#include "Libs.h";
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <glm.hpp>
+#include <glew.h>
+#include <glfw3.h>
+#include <mat4x4.hpp>
+#include <gtc/type_ptr.hpp>
 
 class Shader
 {
@@ -29,12 +36,44 @@ public:
 	/// </summary>
 	/// <param name="value">value data</param>
 	/// <param name="value">value name</param>
+	/// <param name="transpose">transpose matrix</param>
 	void SetValueMat4(glm::mat4 value, const GLchar* name, GLboolean transpose = GL_FALSE);
+	/// <summary>
+	/// Set openGL value
+	/// </summary>
+	/// <param name="value">value data</param>
+	/// <param name="value">value name</param>
+	/// <param name="transpose">transpose matrix</param>
 	void SetValueMat3(glm::mat3 value, const GLchar* name, GLboolean transpose = GL_FALSE);
+	/// <summary>
+	/// Set openGL value
+	/// </summary>
+	/// <param name="value">value data</param>
+	/// <param name="value">value name</param>
 	void SetValueVec4(glm::fvec4 value, const GLchar* name);
+	/// <summary>
+	/// Set openGL value
+	/// </summary>
+	/// <param name="value">value data</param>
+	/// <param name="value">value name</param>
 	void SetValueVec3(glm::fvec3 value, const GLchar* name);
+	/// <summary>
+	/// Set openGL value
+	/// </summary>
+	/// <param name="value">value data</param>
+	/// <param name="value">value name</param>
 	void SetValueVec2(glm::fvec2 value, const GLchar* name);
+	/// <summary>
+	/// Set openGL value
+	/// </summary>
+	/// <param name="value">value data</param>
+	/// <param name="value">value name</param>
 	void SetValue1f(GLfloat value, const GLchar* name);
+	/// <summary>
+	/// Set openGL value
+	/// </summary>
+	/// <param name="value">value data</param>
+	/// <param name="value">value name</param>
 	void SetValue1i(GLint value, const GLchar* name);
 private:
 	/// <summary>
