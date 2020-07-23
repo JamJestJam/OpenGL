@@ -1,41 +1,37 @@
 #pragma once
 
 //console
-#include <iostream>
+//#include <iostream>
+
 //manipulate files
-#include <fstream>
+//#include <fstream>
+
 //manipulate string
-#include <string>
+//#include <string>
+
 //better arrays
 #include <vector>
 
 //add functions to draw
-#include <glew.h>
+//#include <glew.h>
 //create window and draw area
-#include <glfw3.h>
+//#include <glfw3.h>
 
 //funny mathematics
-#include <glm.hpp>
-#include <vec2.hpp>
-#include <vec3.hpp>
-#include <vec4.hpp>
-#include <mat4x4.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
+//#include <glm.hpp>
+//#include <vec2.hpp>
+//#include <vec3.hpp>
+//#include <vec4.hpp>
+//#include <mat4x4.hpp>
+//#include <gtc/matrix_transform.hpp>
+//#include <gtc/type_ptr.hpp>
 
 //load imagest etc
-#include <SOIL2.h>
+//#include <SOIL2.h>
 
 //include our class
-#include "Shader.h"
-#include "Texture.h"
-#include "Material.h"
-
-//base point in 3D
-struct Vertex {
-	glm::vec3 position;
-	glm::vec3 color;
-	glm::vec2 texcoord;
-	glm::vec3 normal;
-};
-
+//#include "Vertex.h"
+//#include "Shader.h"
+//#include "Texture.h"
+//#include "Material.h"
+#include "Mesh.h"

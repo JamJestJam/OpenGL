@@ -104,6 +104,8 @@ int main() {
 	//shader load
 	Shader coreProgram("vertex_core.glsl", "fragment_core.glsl");
 
+	Mesh mesh(vertices, nrOfVertices, indices, nrOfindices);
+
 	//VAO - buffer for 3D objects
 	GLuint VAO;
 	glCreateVertexArrays(1, &VAO);//create space to storage 3D object
@@ -141,7 +143,7 @@ int main() {
 	Texture texture1("Box", 23);
 
 	//material 0
-	Material material(glm::vec3(1.008f), glm::vec3(1.f), glm::vec3(1.f), texture0.GetTextureUnit(), texture1.GetTextureUnit());
+	Material material(glm::vec3(0.008f), glm::vec3(1.f), glm::vec3(1.f), texture0.GetTextureUnit(), texture1.GetTextureUnit());
 
 	//transform 
 	glm::mat4 ModelMatrix(1.f);
@@ -244,6 +246,8 @@ int main() {
 		//Draw
 		//glDrawArrays(GL_TRIANGLES, 0, nrOfVertices);
 		glDrawElements(GL_TRIANGLES, nrOfindices, GL_UNSIGNED_INT, 0);
+
+		mesh.Rednder(&coreProgram);
 
 		//END
 		glfwSwapBuffers(window);//make thinks faster
