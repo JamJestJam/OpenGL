@@ -26,14 +26,14 @@ vec3 CalculateAmbient(){
 	return material.ambient;
 }//calc ambient light
 vec3 CalculateDifuse(){
-	vec3 posToLightDirVec = normalize(vs_position - LightPos0);
+	vec3 posToLightDirVec = normalize(LightPos0 - vs_position);
 	float diffuse = clamp(dot(posToLightDirVec, vs_normal), 0, 1);
 	return material.diffuse * diffuse;
 }//calc diffuse light
 vec3 CalculateSpecular(){
-	vec3 lightToPosDirVer = normalize(LightPos0 - vs_position);
+	vec3 lightToPosDirVer = normalize(vs_position - LightPos0);
 	vec3 reflectDirVec = normalize(reflect(lightToPosDirVer, normalize(vs_normal)));
-	vec3 posToViewDirVec = normalize(vs_position - CameraPos);
+	vec3 posToViewDirVec = normalize(CameraPos - vs_position);
 	float specularConstent = pow(max(dot(posToViewDirVec, reflectDirVec), 0), 30);
 	return material.specular * specularConstent;
 }//calc specular light 

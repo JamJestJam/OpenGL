@@ -4,10 +4,10 @@
 Vertex vertices[] = {
 	//triangle
 	//position						//color							//texcoords				//normal
-	glm::vec3(-0.5f,  0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(0.0f, 1.0f),	glm::vec3(0.0f, 0.0f, -1.0f),
-	glm::vec3(-0.5f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(0.0f, 0.0f),	glm::vec3(0.0f, 0.0f, -1.0f),
-	glm::vec3(0.5f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(1.0f, 0.0f),	glm::vec3(0.0f, 0.0f, -1.0f),
-	glm::vec3(0.5f,  0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(1.0f, 1.0f),	glm::vec3(0.0f, 0.0f, -1.0f)
+	glm::vec3(-0.5f,  0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(0.0f, 1.0f),	glm::vec3(0.0f, 0.0f, 1.0f),
+	glm::vec3(-0.5f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(0.0f, 0.0f),	glm::vec3(0.0f, 0.0f, 1.0f),
+	glm::vec3(0.5f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(1.0f, 0.0f),	glm::vec3(0.0f, 0.0f, 1.0f),
+	glm::vec3(0.5f,  0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(1.0f, 1.0f),	glm::vec3(0.0f, 0.0f, 1.0f)
 };
 //number of vertices in triangle
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
@@ -15,7 +15,9 @@ unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 //use verticles ID
 GLuint indices[] = {
 	0, 1, 2,		//triangle 1
-	0, 2, 3			//triangle 2
+	0, 2, 3,		//triangle 2
+	2, 1, 0,
+	3, 2, 0
 };
 //number of vertices in use
 unsigned nrOfindices = sizeof(indices) / sizeof(GLuint);
@@ -25,33 +27,41 @@ void Framebuffer_resize_callback(GLFWwindow* win, int frameBufferWidth, int fram
 	glViewport(0, 0, frameBufferWidth, frameBufferHeight);//set new draw area size
 }
 
-void UpdateInput(GLFWwindow* window, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale) {
+void UpdateInput(GLFWwindow* window, Mesh* mesh) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {//check if esc key is press
 		glfwSetWindowShouldClose(window, GLFW_TRUE);//close window
 	}
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {//check if esc key is press
-		position.z -= 0.01f;
+		mesh->Move(glm::vec3(0.f, 0.f, -0.01f));
+		//position.z -= 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {//check if esc key is press
-		position.x -= 0.01f;
+		mesh->Move(glm::vec3(-0.01f, 0.f, 0.f));
+		//position.x -= 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {//check if esc key is press
-		position.z += 0.01f;
+		mesh->Move(glm::vec3(0.f, 0.f, 0.01f));
+		//position.z += 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {//check if esc key is press
-		position.x += 0.01f;
+		mesh->Move(glm::vec3(0.01f, 0.f, 0.f));
+		//position.x += 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {//check if esc key is press
-		rotation.y -= 1.f;
+		mesh->Rotate(glm::vec3(0.f, -1.f, 0.f));
+		//rotation.y -= 1.f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {//check if esc key is press
-		rotation.y += 1.f;
+		mesh->Rotate(glm::vec3(0.f, 1.f, 0.f));
+		//rotation.y += 1.f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {//check if esc key is press
-		scale += 0.1f;
+		mesh->Scale(glm::vec3(0.1f));
+		//scale += 0.1f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {//check if esc key is press
-		scale -= 0.1f;
+		mesh->Scale(glm::vec3(-0.1f));
+		//scale -= 0.1f;
 	}
 }
 
@@ -104,39 +114,7 @@ int main() {
 	//shader load
 	Shader coreProgram("vertex_core.glsl", "fragment_core.glsl");
 
-	Mesh mesh(vertices, nrOfVertices, indices, nrOfindices);
-
-	//VAO - buffer for 3D objects
-	GLuint VAO;
-	glCreateVertexArrays(1, &VAO);//create space to storage 3D object
-	glBindVertexArray(VAO);//set our VAO to activ, all changes will be made at VAO
-
-	//VBO - buffer for verticles
-	GLuint VBO;
-	glGenBuffers(1, &VBO);//create space to storage vertex
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);//set buffer type to array and use it
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);//send data to VBO, graphic card memory
-
-	//EBO - buffer for indices
-	GLuint EBO;
-	glGenBuffers(1, &EBO);//create space to storage indices
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);//set buffer type to element array and use it
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);//send data to EBO, graphic card memory
-
-	//let the graphics cards know what the float array, we send represents.
-	//first element, element lengh, data type, normalize, size to next vertex position, pointer to next atribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position));//position
-	glEnableVertexAttribArray(0);//enable position
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));//color
-	glEnableVertexAttribArray(1);//enable color
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcoord));//texture
-	glEnableVertexAttribArray(2);//enable texture
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));//texture
-	glEnableVertexAttribArray(3);//enable normal
-
-	glBindVertexArray(0);//Exit editing VAO
-
-	glm::vec4 tmp = glm::vec4(1, 2, 3, 4);
+	Mesh mesh(vertices, nrOfVertices, indices, nrOfindices, glm::vec3(0.f), glm::vec3(0.f), glm::vec3(1.f));
 
 	//textures
 	Texture texture0("Light", 100);
@@ -144,20 +122,6 @@ int main() {
 
 	//material 0
 	Material material(glm::vec3(0.008f), glm::vec3(1.f), glm::vec3(1.f), texture0.GetTextureUnit(), texture1.GetTextureUnit());
-
-	//transform 
-	glm::mat4 ModelMatrix(1.f);
-
-	glm::vec3 position(0.f);
-	glm::vec3 rotation(0.f);
-	glm::vec3 scale(1.f);
-
-	//transofrm once
-	ModelMatrix = translate(ModelMatrix, position);//move
-	ModelMatrix = rotate(ModelMatrix, glm::radians(rotation.x), glm::vec3(1.f, 0.f, 0.f));//rotation x
-	ModelMatrix = rotate(ModelMatrix, glm::radians(rotation.y), glm::vec3(0.f, 1.f, 0.f));//rotation y 
-	ModelMatrix = rotate(ModelMatrix, glm::radians(rotation.z), glm::vec3(0.f, 0.f, 1.f));//rotation z
-	ModelMatrix = glm::scale(ModelMatrix, scale);//scale
 
 	//camera init
 	glm::vec3 camPosition(0.f, 0.f, 1.f);//camera position
@@ -182,8 +146,6 @@ int main() {
 	//Light
 	glm::vec3 lightPos0(0.f, 0.f, 0.f);//light position
 
-	//use transofrmation
-	coreProgram.SetValueMat4(ModelMatrix, "ModelMatrix");//use transformations
 	//use perspective
 	coreProgram.SetValueMat4(ViewMatrix, "ViewMatrix");
 	coreProgram.SetValueMat4(ProjectionMatrix, "ProjectionMatrix");
@@ -201,22 +163,10 @@ int main() {
 		glfwPollEvents();
 
 		//Update logic
-		UpdateInput(window, position, rotation, scale);
+		UpdateInput(window, &mesh);
 
 		//Clear
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);//clear draw area
-
-		
-
-		//move rotate and scale every loop
-		ModelMatrix = glm::mat4(1.f);
-		ModelMatrix = translate(ModelMatrix, position);//move
-		ModelMatrix = rotate(ModelMatrix, glm::radians(rotation.x), glm::vec3(1.f, 0.f, 0.f));//rotation x
-		ModelMatrix = rotate(ModelMatrix, glm::radians(rotation.y), glm::vec3(0.f, 1.f, 0.f));//rotation y 
-		ModelMatrix = rotate(ModelMatrix, glm::radians(rotation.z), glm::vec3(0.f, 0.f, 1.f));//rotation z
-		ModelMatrix = glm::scale(ModelMatrix, scale);//scale
-		//use new tranformations
-		coreProgram.SetValueMat4(ModelMatrix, "ModelMatrix");
 
 		//use perspective
 		glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);//get size of drawarea //it must be change its only for test
@@ -227,6 +177,7 @@ int main() {
 			nearPlane,
 			farPlane
 		);
+
 		coreProgram.SetValueMat4(ProjectionMatrix, "ProjectionMatrix");
 
 		//update uniforms
@@ -239,14 +190,7 @@ int main() {
 		texture0.Bind();
 		texture1.Bind();
 
-
-		//bind vertex array object
-		glBindVertexArray(VAO);
-
-		//Draw
-		//glDrawArrays(GL_TRIANGLES, 0, nrOfVertices);
-		glDrawElements(GL_TRIANGLES, nrOfindices, GL_UNSIGNED_INT, 0);
-
+		//draw
 		mesh.Rednder(&coreProgram);
 
 		//END
