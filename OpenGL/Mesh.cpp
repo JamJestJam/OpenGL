@@ -1,6 +1,21 @@
 #include "Mesh.h"
 
 Mesh::Mesh(Vertex* vertexArray, const unsigned& nrOfVertices, GLuint* indicesArray, const unsigned& nrOfIndices, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
+	this->Init(vertexArray, nrOfVertices, indicesArray, nrOfIndices, position, rotation, scale);
+}
+
+Mesh::Mesh(Primitive* primitive, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
+	this->Init(primitive->GetVertices(), primitive->GetNrOfVertices(), primitive->GetIndices(), primitive->GetNrOfIndices(), position, rotation, scale);
+}
+
+Mesh::~Mesh() {
+	///delete data
+	glDeleteVertexArrays(1, &this->vao);
+	glDeleteBuffers(1, &this->vbo);
+	glDeleteBuffers(1, &this->ebo);
+}
+
+void Mesh::Init(Vertex* vertexArray, const unsigned& nrOfVertices, GLuint* indicesArray, const unsigned& nrOfIndices, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
 	//set variables
 	this->nrOfIndices = nrOfIndices;
 	this->nrOfVertices = nrOfVertices;
@@ -38,13 +53,6 @@ Mesh::Mesh(Vertex* vertexArray, const unsigned& nrOfVertices, GLuint* indicesArr
 	glBindVertexArray(0);//Exit editing VAO
 
 	this->UpdateMatrix();
-}
-
-Mesh::~Mesh() {
-	///delete data
-	glDeleteVertexArrays(1, &this->vao);
-	glDeleteBuffers(1, &this->vbo);
-	glDeleteBuffers(1, &this->ebo);
 }
 
 void Mesh::Update() {

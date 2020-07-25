@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Vertex.h"
+#include "Primitive.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "Material.h"
@@ -19,7 +20,20 @@ public:
 	/// <param name="nrOfVertices">vertex array lenght</param>
 	/// <param name="indexArray">array of indexs</param>
 	/// <param name="indicesArray">indices array lenght</param>
+	/// <param name="position">Starting position</param>
+	/// <param name="rotation">Starting rotation</param>
+	/// <param name="scale">Starting scale</param>
 	Mesh(Vertex* vertexArray, const unsigned& nrOfVertices, GLuint* indicesArray, const unsigned& nrOfIndices,
+		glm::vec3 position = glm::vec3(0.f), glm::vec3 rotation = glm::vec3(0.f), glm::vec3 scale = glm::vec3(1.f));
+	/// <summary>
+	/// Create new Mesh
+	/// </summary>
+	/// <param name="primitive">Primitive</param>
+	/// <param name="position">Starting position</param>
+	/// <param name="rotation">Starting rotation</param>
+	/// <param name="scale">Starting scale</param>
+	/// <returns></returns>
+	Mesh(Primitive* primitive,
 		glm::vec3 position = glm::vec3(0.f), glm::vec3 rotation = glm::vec3(0.f), glm::vec3 scale = glm::vec3(1.f));
 	/// <summary>
 	/// Delete mesh
@@ -65,6 +79,18 @@ public:
 	/// <param name="shader">shader</param>
 	void Rednder(Shader* shader);
 private:
+	/// <summary>
+	/// Initialize mesh data
+	/// </summary>
+	/// <param name="vertexArray">array of vertexs</param>
+	/// <param name="nrOfVertices">vertex array lenght</param>
+	/// <param name="indexArray">array of indexs</param>
+	/// <param name="indicesArray">indices array lenght</param>
+	/// <param name="position">Starting position</param>
+	/// <param name="rotation">Starting rotation</param>
+	/// <param name="scale">Starting scale</param>
+	void Init(Vertex* vertexArray, const unsigned& nrOfVertices, GLuint* indicesArray, const unsigned& nrOfIndices,
+		glm::vec3 position = glm::vec3(0.f), glm::vec3 rotation = glm::vec3(0.f), glm::vec3 scale = glm::vec3(1.f));
 	/// <summary>
 	/// Update shader uniforms
 	/// </summary>

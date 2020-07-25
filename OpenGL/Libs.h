@@ -10,7 +10,7 @@
 //#include <string>
 
 //better arrays
-#include <vector>
+//#include <vector>
 
 //add functions to draw
 //#include <glew.h>
@@ -34,4 +34,5 @@
 //#include "Shader.h"
 //#include "Texture.h"
 //#include "Material.h"
+//#include "Primitive.h"
 #include "Mesh.h"

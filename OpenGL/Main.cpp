@@ -1,27 +1,5 @@
 #include "Libs.h"
 
-//triangle 
-Vertex vertices[] = {
-	//triangle
-	//position						//color							//texcoords				//normal
-	glm::vec3(-0.5f,  0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(0.0f, 1.0f),	glm::vec3(0.0f, 0.0f, 1.0f),
-	glm::vec3(-0.5f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(0.0f, 0.0f),	glm::vec3(0.0f, 0.0f, 1.0f),
-	glm::vec3(0.5f, -0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(1.0f, 0.0f),	glm::vec3(0.0f, 0.0f, 1.0f),
-	glm::vec3(0.5f,  0.5f, 0.0f),	glm::vec3(1.0f, 1.0f, 1.0f),	glm::vec2(1.0f, 1.0f),	glm::vec3(0.0f, 0.0f, 1.0f)
-};
-//number of vertices in triangle
-unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
-
-//use verticles ID
-GLuint indices[] = {
-	0, 1, 2,		//triangle 1
-	0, 2, 3,		//triangle 2
-	2, 1, 0,
-	3, 2, 0
-};
-//number of vertices in use
-unsigned nrOfindices = sizeof(indices) / sizeof(GLuint);
-
 //function load on resize window
 void Framebuffer_resize_callback(GLFWwindow* win, int frameBufferWidth, int frameBufferHeight) {
 	glViewport(0, 0, frameBufferWidth, frameBufferHeight);//set new draw area size
@@ -95,7 +73,7 @@ int main() {
 	{
 		std::cout << "GLEW init fail\n";//show error in console
 		glfwTerminate();//terminate glfw
-		return 0;//shutdown program
+		return 0;//shutdown program 
 	}
 
 	//opengl options
@@ -114,7 +92,7 @@ int main() {
 	//shader load
 	Shader coreProgram("vertex_core.glsl", "fragment_core.glsl");
 
-	Mesh mesh(vertices, nrOfVertices, indices, nrOfindices, glm::vec3(0.f), glm::vec3(0.f), glm::vec3(1.f));
+	Mesh mesh(&Triangle(), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(1.f));
 
 	//textures
 	Texture texture0("Light", 100);
