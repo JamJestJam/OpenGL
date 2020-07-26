@@ -1,4 +1,4 @@
-#include "Libs.h"
+#include "Game.h"
 
 //function load on resize window
 void Framebuffer_resize_callback(GLFWwindow* win, int frameBufferWidth, int frameBufferHeight) {
@@ -43,29 +43,36 @@ void UpdateInput(GLFWwindow* window, Mesh* mesh) {
 	}
 }
 
+GLFWwindow* CreateWindow(const char* windowName, int& widthBuffer, int& heightBuffer, const int width=480, const int height=320, const int GLversion=3, const int GLsubVersion=3, bool resizable=false) {
+	//glfw setings
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//core version
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GLversion);//set version 4.4
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GLsubVersion);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);//don't allow windows resible
+
+	GLFWwindow* window = glfwCreateWindow(width, height, windowName, NULL, NULL);//create new window
+
+	glfwGetFramebufferSize(window, &widthBuffer, &heightBuffer);//get size of drawarea
+	glfwSetFramebufferSizeCallback(window, Framebuffer_resize_callback);//on window event "resize" callback function
+
+	glfwMakeContextCurrent(window);//show window
+
+	return window;
+}
+
 int main() {
 	//init glfw
 	glfwInit();//init glfw
 
 	//create windows
-	const int windowWidth = 640;//window width in px
-	const int windowheight = 480;//window height in px
+	const int windowWidth = 480;//window width in px
+	const int windowheight = 320;//window height in px
 	int framebufferWidth = 0;//drawarea width
 	int framebufferHeight = 0;//drawarea height
 	const char* title = "Ucze sie";//window title
 
-	//glfw setings
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//core version
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);//set version 4.4
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);//don't allow windows resible
+	GLFWwindow* window = CreateWindow(title, framebufferWidth, framebufferHeight, windowWidth, windowheight, 4, 4, true);
 
-	GLFWwindow* window = glfwCreateWindow(windowWidth, windowheight, title, NULL, NULL);//create new window
-
-	glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);//get size of drawarea
-	glfwSetFramebufferSizeCallback(window, Framebuffer_resize_callback);//on window event "resize" callback function
-
-	glfwMakeContextCurrent(window);//show window
 	//init glew
 	glewExperimental = GL_TRUE;//init glew
 
@@ -92,7 +99,7 @@ int main() {
 	//shader load
 	Shader coreProgram("vertex_core.glsl", "fragment_core.glsl");
 
-	Mesh mesh(&Triangle(), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(1.f));
+	Mesh mesh(&Quad(), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(1.f));
 
 	//textures
 	Texture texture0("Light", 100);
