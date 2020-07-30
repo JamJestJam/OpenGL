@@ -1,10 +1,10 @@
 #include "Shader.h"
 
-Shader::Shader(const char* vertexName, const char* fragmentName, const char* geometryName ) {
+Shader::Shader(int GLmajorVer, int GLminorVer, const char* vertexName, const char* fragmentName, const char* geometryName ) {
 	//load shaders
-	GLuint vertexShader = this->LoadShader(GL_VERTEX_SHADER, vertexName);
-	GLuint geometryShader = (geometryName != "") ? this->LoadShader(GL_GEOMETRY_SHADER, geometryName) : 0;
-	GLuint fragmentShader = this->LoadShader(GL_FRAGMENT_SHADER, fragmentName);
+	GLuint vertexShader = this->LoadShader(GL_VERTEX_SHADER, vertexName, GLmajorVer, GLminorVer);
+	GLuint geometryShader = (geometryName != "") ? this->LoadShader(GL_GEOMETRY_SHADER, geometryName, GLmajorVer, GLminorVer) : 0;
+	GLuint fragmentShader = this->LoadShader(GL_FRAGMENT_SHADER, fragmentName, GLmajorVer, GLminorVer);
 
 	//link program
 	this->linkProgram(vertexShader, geometryShader, fragmentShader);
@@ -20,7 +20,7 @@ Shader::~Shader() {
 	glDeleteProgram(this->ID);//delete program from VRAM
 }
 
-std::string Shader::LoadShaderSource(const char* shaderName) {
+std::string Shader::LoadShaderSource(const char* shaderName, int GLmajorVer, int GLminorVer) {
 	std::string temp = "";//used to get line
 	std::string src = "";//save data
 
@@ -39,17 +39,21 @@ std::string Shader::LoadShaderSource(const char* shaderName) {
 	}
 	inFile.close();//close file
 
+	std::string version = std::to_string(GLmajorVer) + std::to_string(GLminorVer) + "0";
+	src.replace(src.find("#version"), 12, "#version " + version);
+
 	return src;
 }
 
-GLuint Shader::LoadShader(GLenum type, const char* shaderName) {
+GLuint Shader::LoadShader(GLenum type, const char* shaderName, int GLmajorVer, int GLminorVer) {
 
 	char infoLog[512];//info about errors for example. program isn't able to link or a shader isn't able to compile etc.
 	GLint success;//this will be used to determine if the shader has loaded correctly
 
 	GLuint shader = glCreateShader(type);//create shader id;
-	std::string src_src = this->LoadShaderSource(shaderName);
+	std::string src_src = this->LoadShaderSource(shaderName, GLmajorVer, GLminorVer);
 	const GLchar* src = src_src.c_str();//create shader source
+
 	glShaderSource(shader, 1, &src, NULL);//set shader source
 	glCompileShader(shader);//compile vertex shader
 

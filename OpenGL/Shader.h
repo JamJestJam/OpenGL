@@ -18,7 +18,7 @@ public:
 	/// <param name="vertexName">vertex shader file name</param>
 	/// <param name="geometryName">geometry shader file name</param>
 	/// <param name="fragmentName">fragment shader file name</param>
-	Shader(const char* vertexName, const char* fragmentName, const char* geometryName = "");
+	Shader(int GLmajorVer, int GLminorVer, const char* vertexName, const char* fragmentName, const char* geometryName = "");
 	/// <summary>
 	/// Shader destructor
 	/// </summary>
@@ -85,14 +85,14 @@ private:
 	/// </summary>
 	/// <param name="shaderName">Shader file name</param>
 	/// <returns>Shader code</returns>
-	std::string LoadShaderSource(const char* shaderName);
+	std::string LoadShaderSource(const char* shaderName, int GLmajorVer, int GLminorVer);
 	/// <summary>
 	/// Load shader from file
 	/// </summary>
 	/// <param name="type">Shader type ex. vertexShader, fragmentShader, geometryShader etc.</param>
 	/// <param name="fileName">Shader file name</param>
 	/// <returns></returns>
-	GLuint LoadShader(GLenum type, const char* shaderName);
+	GLuint LoadShader(GLenum type, const char* shaderName, int GLmajorVer, int GLminorVer);
 	/// <summary>
 	/// link shaders to program
 	/// </summary>

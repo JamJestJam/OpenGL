@@ -59,7 +59,7 @@ void Mesh::Update() {
 
 }
 
-void Mesh::Rednder(Shader* shader) {
+void Mesh::Render(Shader* shader) {
 	//update matrix
 	this->UpdateMatrix();
 	//update uniforms

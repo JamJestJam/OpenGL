@@ -77,7 +77,7 @@ public:
 	/// Render mesh
 	/// </summary>
 	/// <param name="shader">shader</param>
-	void Rednder(Shader* shader);
+	void Render(Shader* shader);
 private:
 	/// <summary>
 	/// Initialize mesh data
