@@ -175,8 +175,10 @@
     <None Include="Shaders\vertex_core.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Images\Box.png" />
-    <Image Include="Images\Light.png" />
+    <Image Include="Images\container.png" />
+    <Image Include="Images\container_specular.png" />
+    <Image Include="Images\pusheen.png" />
+    <Image Include="Images\pusheen_specular.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

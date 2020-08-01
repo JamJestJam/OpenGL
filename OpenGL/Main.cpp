@@ -1,7 +1,7 @@
 #include "Game.h"
 
 int main() {
-	Game game("Test");
+	Game game("Test", 1000, 1000);
 	
 	//main loop
 	while (game.GetWindowShouldClose())//while window is not closed

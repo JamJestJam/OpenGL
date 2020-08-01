@@ -14,7 +14,7 @@ public:
 	/// <param name="textureName">Texture file name</param>
 	/// <param name="texture_unit">Texture unit ID</param>
 	/// <param name="type">Texture type for exp. GL_TEXTURE_2D</param>
-	Texture(std::string textureName, GLint texture_unit ,GLenum type = GL_TEXTURE_2D);
+	Texture(std::string textureName, GLenum type = GL_TEXTURE_2D);
 	/// <summary>
 	/// Remove texture
 	/// </summary>
@@ -30,13 +30,9 @@ public:
 	/// <returns>Texture ID</returns>
 	GLuint GetID() const;
 	/// <summary>
-	/// get textyre unit
-	/// </summary>
-	GLuint GetTextureUnit() const;
-	/// <summary>
 	/// Bind texture
 	/// </summary>
-	void Bind();
+	void Bind(const GLint textureUnit);
 	/// <summary>
 	/// unbind texture
 	/// </summary>
@@ -58,9 +54,5 @@ private:
 	/// texture type
 	/// </summary>
 	unsigned int type;
-	/// <summary>
-	/// Texture Unit ID
-	/// </summary>
-	GLint textureUnit;
 };
 

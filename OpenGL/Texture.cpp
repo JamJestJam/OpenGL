@@ -1,9 +1,8 @@
 #include "Texture.h"
 
-Texture::Texture(std::string textureName, GLint texture_unit, GLenum type) {
+Texture::Texture(std::string textureName, GLenum type) {
 	//save data
 	this->type = type;
-	this->textureUnit = texture_unit;
 	//image location
 	std::string src = "./Images/" + textureName + ".png";
 	//load image                        
@@ -74,12 +73,8 @@ GLuint Texture::GetID() const {
 	return this->ID;
 }
 
-GLuint Texture::GetTextureUnit() const {
-	return this->textureUnit;
-}
-
-void Texture::Bind() {
-	glActiveTexture(GL_TEXTURE0 + this->textureUnit);
+void Texture::Bind(const GLint textureUnit) {
+	glActiveTexture(GL_TEXTURE0 + textureUnit);
 	glBindTexture(this->type, this->ID);
 }
 

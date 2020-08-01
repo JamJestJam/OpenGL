@@ -28,6 +28,7 @@ vec3 CalculateAmbient(){
 vec3 CalculateDifuse(){
 	vec3 posToLightDirVec = normalize(LightPos0 - vs_position);
 	float diffuse = clamp(dot(posToLightDirVec, vs_normal), 0, 1);
+
 	return material.diffuse * diffuse;
 }//calc diffuse light
 vec3 CalculateSpecular(){
@@ -35,7 +36,8 @@ vec3 CalculateSpecular(){
 	vec3 reflectDirVec = normalize(reflect(lightToPosDirVer, normalize(vs_normal)));
 	vec3 posToViewDirVec = normalize(CameraPos - vs_position);
 	float specularConstent = pow(max(dot(posToViewDirVec, reflectDirVec), 0), 30);
-	return material.specular * specularConstent;
+
+	return material.specular * specularConstent * texture(material.specularTex, vs_texcoord).rgb;
 }//calc specular light 
 
 void main()
@@ -53,8 +55,8 @@ void main()
 
 	//mix together
 	fs_color = 
-		texture(material.diffuseTex, vs_texcoord) *					//texture0
-		texture(material.specularTex, vs_texcoord) *				//texture1
+		texture(material.diffuseTex, vs_texcoord) *					//main texture
+		//texture(material.specularTex, vs_texcoord) *				//specular texture
 		vec4(vs_color, 1.f) *										//vertex color
 		(
 			vec4(ambientFinal, 1.f) +								//Ambient

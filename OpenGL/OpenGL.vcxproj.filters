@@ -83,10 +83,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Images\Box.png">
+    <Image Include="Images\container.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
-    <Image Include="Images\Light.png">
+    <Image Include="Images\container_specular.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Images\pusheen.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="Images\pusheen_specular.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
   </ItemGroup>

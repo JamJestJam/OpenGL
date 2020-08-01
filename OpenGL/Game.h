@@ -58,16 +58,12 @@ private:
 
 	//Shaders
 	std::vector<Shader*> shaders;
-
 	//Textures
 	std::vector<Texture*> textures;
-
 	//Materials
 	std::vector<Material*> materials;
-
 	//Meshes
 	std::vector<Mesh*> meshes;
-
 	//Lights
 	std::vector<glm::vec3*> lights;
 
@@ -101,9 +97,16 @@ private:
 	void InitUniforms();
 
 	/// <summary>
+	/// Update uniform for perspective
+	/// </summary>
+	void UpdateUniforms();
+
+	//static functions
+	/// <summary>
 	/// Callback on change window size
 	/// </summary>
 	static void Framebuffer_resize_callback(GLFWwindow* win, int frameBufferWidth, int frameBufferHeight);
+	static void UpdateInput(GLFWwindow* win, Mesh* mesh);//tmp
 public:
 	/// <summary>
 	/// Update logic
